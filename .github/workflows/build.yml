@@ -1,0 +1,40 @@
+name: Build Client Plugin
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC (x86 / 32-bit)
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Configure (CMake, 32-bit)
+        run: cmake -S . -B build -A Win32
+
+      - name: Build (Release)
+        run: cmake --build build --config Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecrp_client
+          path: build/Release/ecrp_client.dll
+
+      - name: Create Release (kalau push tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/Release/ecrp_client.dll
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
