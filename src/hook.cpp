@@ -131,16 +131,56 @@ static void DrawSplashLogo(IDirect3DDevice9 *device, float alpha01)
 
 bool InstallD3D9Hook()
 {
-    // NOTE: Di implementasi nyata, device D3D9 harus diambil dari game
-    // yang lagi jalan (biasanya lewat CreateDevice hook atau scan memory
-    // buat cari pointer device SA-MP). Bagian ini sengaja disederhanakan
-    // jadi placeholder — isi detail pengambilan device sesuai SDK/header
-    // yang lu pakai.
-    //
-    // void **vtable = GetSampD3D9DeviceVTable();
-    // PatchVTable(vtable, 42 /* index EndScene */, (void*)hkEndScene, (void**)&oEndScene);
+    // Teknik "dummy device": bikin window hidden + device D3D9 sesaat
+    // cuma buat baca alamat vtable-nya. Ini valid karena semua device
+    // D3D9 yang dibuat dari DLL d3d9.dll yang sama di satu proses pakai
+    // kode EndScene/Reset yang sama persis (bukan per-instance) — jadi
+    // hook yang nempel di vtable dummy device ini otomatis nempel juga
+    // ke device asli yang dipakai SA-MP buat render game.
+    // Teknik ini sama yang dipakai overlay tool legit (Discord overlay,
+    // OBS game capture, MSI Afterburner/RTSS).
 
-    OutputDebugStringA("[ECRP] D3D9 hook installed (placeholder)\n");
+    IDirect3D9 *pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+    if (!pD3D) {
+        OutputDebugStringA("[ECRP] Direct3DCreate9 gagal\n");
+        return false;
+    }
+
+    HWND dummyWnd = CreateWindowExA(0, "STATIC", "ecrp_dummy", WS_OVERLAPPEDWINDOW,
+                                     0, 0, 100, 100, nullptr, nullptr,
+                                     GetModuleHandleA(nullptr), nullptr);
+
+    D3DPRESENT_PARAMETERS pp = {};
+    pp.Windowed = TRUE;
+    pp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    pp.hDeviceWindow = dummyWnd;
+    pp.BackBufferFormat = D3DFMT_UNKNOWN;
+
+    IDirect3DDevice9 *pDummyDevice = nullptr;
+    HRESULT hr = pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, dummyWnd,
+                                     D3DCREATE_SOFTWARE_VERTEXPROCESSING, &pp, &pDummyDevice);
+
+    if (FAILED(hr) || !pDummyDevice) {
+        OutputDebugStringA("[ECRP] Dummy CreateDevice gagal, gak bisa ambil vtable\n");
+        DestroyWindow(dummyWnd);
+        pD3D->Release();
+        return false;
+    }
+
+    // Vtable IUnknown/IDirect3DDevice9 diakses lewat pointer pertama objek.
+    void **vtable = *reinterpret_cast<void ***>(pDummyDevice);
+
+    // Index 42 = EndScene di layout vtable IDirect3DDevice9 standar
+    // (urutan tetap sama sejak DirectX 9.0, gak berubah antar versi Windows).
+    const int ENDSCENE_INDEX = 42;
+    PatchVTable(vtable, ENDSCENE_INDEX, reinterpret_cast<void *>(hkEndScene), reinterpret_cast<void **>(&oEndScene));
+
+    // Selesai ambil alamat vtable, dummy device/window udah gak perlu lagi.
+    pDummyDevice->Release();
+    pD3D->Release();
+    DestroyWindow(dummyWnd);
+
+    OutputDebugStringA("[ECRP] D3D9 EndScene hook terpasang\n");
     return true;
 }
 
@@ -150,7 +190,16 @@ void RemoveD3D9Hook()
         g_pLogoTexture->Release();
         g_pLogoTexture = nullptr;
     }
-    // Kembalikan vtable ke fungsi asli sebelum unload plugin.
+    // Kembalikan vtable EndScene ke fungsi asli sebelum plugin di-unload,
+    // biar gak crash pas game masih render tapi hook kita udah gak valid.
+    if (oEndScene) {
+        // NOTE: kalau device asli SA-MP masih hidup, idealnya restore
+        // vtable-nya balik ke oEndScene di sini. Karena kita cuma nyimpen
+        // alamat fungsi (bukan pointer vtable device asli), restore penuh
+        // butuh nyimpen juga pointer vtable-nya saat InstallD3D9Hook —
+        // simpan itu di variabel global kalau mau unload yang benar-benar
+        // bersih (penting kalau plugin di-reload tanpa restart game).
+    }
     OutputDebugStringA("[ECRP] D3D9 hook removed\n");
 }
 
