@@ -25,16 +25,24 @@ jobs:
       - name: Build (Release)
         run: cmake --build build --config Release
 
+      - name: Bundle release package
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp build/Release/ecrp_client.dll dist/
+          cp connect.bat dist/
+          cp assets/logo.png dist/
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ecrp_client
-          path: build/Release/ecrp_client.dll
+          path: dist/
 
       - name: Create Release (kalau push tag)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: build/Release/ecrp_client.dll
+          files: dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

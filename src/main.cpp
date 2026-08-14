@@ -1,5 +1,6 @@
 // src/main.cpp
 #include "../include/plugin.h"
+#include "../include/config.h"
 #include "hook.h"
 #include <windows.h>
 
@@ -25,7 +26,7 @@ __declspec(dllexport) unsigned int Supports()
 
 __declspec(dllexport) bool Load(void **ppData)
 {
-    OutputDebugStringA("[ECRP] Emerald City Roleplay client plugin loaded\n");
+    OutputDebugStringA("[ECRP] " ECRP_SERVER_NAME " client plugin loaded\n");
     InstallD3D9Hook();
     return true;
 }
