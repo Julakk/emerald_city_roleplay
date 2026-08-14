@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Emerald City Roleplay</title>
+<style>
+  :root {
+    --bg: #0a0f0c;
+    --surface: #121a15;
+    --surface-2: #1a251e;
+    --emerald: #1f8a5c;
+    --emerald-bright: #3ecf8e;
+    --gold: #d4af37;
+    --text: #e9f2ec;
+    --muted: #7c948a;
+    --border: #223129;
+    --font-display: 'Oswald', 'Arial Narrow', sans-serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    padding-bottom: 76px;
+    overflow-x: hidden;
+  }
+
+  /* Skyline motif — dipakai berulang sebagai signature element */
+  .skyline-band {
+    position: relative;
+    height: 64px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(31,138,92,0.18), transparent);
+  }
+  .skyline-band svg { position: absolute; bottom: 0; width: 100%; height: 100%; opacity: 0.5; }
+
+  header.hero {
+    padding: 28px 20px 20px;
+    background:
+      radial-gradient(120% 100% at 50% -10%, rgba(62,207,142,0.20), transparent 60%),
+      var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand-row { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: linear-gradient(160deg, var(--emerald-bright), var(--emerald) 70%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 700; color: #06120c; font-size: 20px;
+  }
+  .brand-text .eyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em;
+    color: var(--emerald-bright); text-transform: uppercase;
+  }
+  .brand-text h1 {
+    font-family: var(--font-display); font-weight: 600; font-size: 22px;
+    letter-spacing: 0.01em; line-height: 1.1;
+  }
+
+  main { padding: 18px 16px 8px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .card h2 {
+    font-family: var(--font-display); font-weight: 600; font-size: 15px;
+    letter-spacing: 0.02em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* --- Status server --- */
+  .status-top { display: flex; align-items: center; justify-content: space-between; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); display: inline-block; margin-right: 8px; }
+  .status-dot.online { background: var(--emerald-bright); box-shadow: 0 0 8px var(--emerald-bright); }
+  .status-dot.offline { background: #d15c5c; }
+  .status-label { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+  .status-label.online { color: var(--emerald-bright); }
+  .status-label.offline { color: #d15c5c; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .stat { background: var(--surface-2); border-radius: 10px; padding: 12px; }
+  .stat .num { font-family: var(--font-mono); font-size: 22px; font-weight: 600; color: var(--emerald-bright); }
+  .stat .label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .server-ip {
+    margin-top: 14px; display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface-2); border-radius: 10px; padding: 10px 12px;
+    font-family: var(--font-mono); font-size: 13px;
+  }
+  .server-ip button {
+    background: var(--emerald); color: #06120c; border: none; border-radius: 6px;
+    padding: 6px 10px; font-size: 11px; font-weight: 600; font-family: var(--font-body);
+  }
+
+  .refresh-note { font-size: 11px; color: var(--muted); margin-top: 10px; }
+
+  /* --- Buttons / links --- */
+  .link-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 10px;
+    text-decoration: none; color: var(--text);
+  }
+  .link-btn .l-title { font-weight: 600; font-size: 14px; }
+  .link-btn .l-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .link-btn .l-arrow { color: var(--emerald-bright); font-size: 18px; }
+
+  .discord-btn { background: linear-gradient(160deg, #4a5ee0, #3446c9); border: none; }
+
+  /* --- Cara Main (steps) --- */
+  .step {
+    display: flex; gap: 12px; margin-bottom: 16px;
+  }
+  .step .n {
+    font-family: var(--font-display); font-weight: 700; font-size: 18px;
+    color: var(--emerald-bright); min-width: 26px;
+  }
+  .step .t h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .step .t p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* --- Berita --- */
+  .news-item { border-bottom: 1px solid var(--border); padding: 14px 0; }
+  .news-item:last-child { border-bottom: none; }
+  .news-date { font-family: var(--font-mono); font-size: 11px; color: var(--emerald-bright); }
+  .news-item h3 { font-size: 14px; margin: 4px 0 4px; }
+  .news-item p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* --- Donasi --- */
+  .price-card {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface-2); border-radius: 12px; padding: 14px; margin-bottom: 10px;
+    border: 1px solid var(--border);
+  }
+  .price-card.featured { border-color: var(--gold); }
+  .price-card .p-name { font-weight: 600; font-size: 14px; }
+  .price-card .p-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .price-card .p-price { font-family: var(--font-mono); color: var(--gold); font-weight: 600; font-size: 14px; }
+
+  .cta-gold {
+    display: block; text-align: center; text-decoration: none;
+    background: linear-gradient(160deg, var(--gold), #a8842a);
+    color: #1a1305; font-weight: 700; padding: 14px; border-radius: 12px;
+    font-size: 14px; margin-top: 4px;
+  }
+
+  /* --- Bottom nav --- */
+  nav.tabbar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface); border-top: 1px solid var(--border);
+    display: flex; padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+    z-index: 10;
+  }
+  nav.tabbar button {
+    flex: 1; background: none; border: none; color: var(--muted);
+    font-family: var(--font-body); font-size: 10px; padding: 6px 2px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  nav.tabbar button .ic { font-size: 18px; line-height: 1; }
+  nav.tabbar button.active { color: var(--emerald-bright); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="brand-row">
+    <div class="brand-mark">EC</div>
+    <div class="brand-text">
+      <div class="eyebrow">Companion App</div>
+      <h1>Emerald City Roleplay</h1>
+    </div>
+  </div>
+</header>
+<div class="skyline-band">
+  <svg viewBox="0 0 400 64" preserveAspectRatio="none">
+    <rect x="10" y="20" width="18" height="44" fill="#1f8a5c"/>
+    <rect x="34" y="10" width="22" height="54" fill="#3ecf8e"/>
+    <rect x="62" y="28" width="16" height="36" fill="#1f8a5c"/>
+    <rect x="84" y="4" width="14" height="60" fill="#3ecf8e"/>
+    <rect x="104" y="24" width="20" height="40" fill="#1f8a5c"/>
+    <rect x="150" y="16" width="18" height="48" fill="#3ecf8e"/>
+    <rect x="174" y="30" width="16" height="34" fill="#1f8a5c"/>
+    <rect x="220" y="8" width="20" height="56" fill="#3ecf8e"/>
+    <rect x="246" y="26" width="16" height="38" fill="#1f8a5c"/>
+    <rect x="280" y="18" width="18" height="46" fill="#3ecf8e"/>
+    <rect x="304" y="32" width="14" height="32" fill="#1f8a5c"/>
+    <rect x="340" y="14" width="20" height="50" fill="#3ecf8e"/>
+    <rect x="366" y="28" width="16" height="36" fill="#1f8a5c"/>
+  </svg>
+</div>
+
+<main>
+
+  <!-- ============ STATUS ============ -->
+  <section class="page active" id="page-status">
+    <div class="card">
+      <h2>Status Server</h2>
+      <div class="status-top">
+        <div>
+          <span class="status-dot" id="statusDot"></span>
+          <span class="status-label" id="statusLabel">Mengecek...</span>
+        </div>
+        <button onclick="refreshStatus()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:11px;">Refresh</button>
+      </div>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="num" id="statPlayers">–</div>
+          <div class="label">Player Online</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="statPing">–</div>
+          <div class="label">Ping (ms)</div>
+        </div>
+      </div>
+      <div class="server-ip">
+        <span>217.216.111.75:7034</span>
+        <button onclick="copyIP()">Salin IP</button>
+      </div>
+      <div class="refresh-note">Data diambil dari backend query server. Lihat README kalau status selalu "offline" — mungkin backend belum di-deploy.</div>
+    </div>
+  </section>
+
+  <!-- ============ DISCORD ============ -->
+  <section class="page" id="page-discord">
+    <div class="card">
+      <h2>Komunitas</h2>
+      <a class="link-btn discord-btn" href="https://discord.gg/GANTI-INVITE-CODE" target="_blank">
+        <div>
+          <div class="l-title">Gabung Discord</div>
+          <div class="l-sub" style="color:#c9d0f5;">Info event, laporan bug, ngobrol bareng player lain</div>
+        </div>
+        <span class="l-arrow">→</span>
+      </a>
+      <a class="link-btn" href="https://ahmadstore.my.id" target="_blank">
+        <div>
+          <div class="l-title">Ahmad Store</div>
+          <div class="l-sub">Hosting server & VPS Emerald City Roleplay</div>
+        </div>
+        <span class="l-arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ CARA MAIN ============ -->
+  <section class="page" id="page-guide">
+    <div class="card">
+      <h2>Cara Main</h2>
+      <div class="step">
+        <div class="n">1</div>
+        <div class="t"><h3>Siapin GTA:SA</h3><p>Pakai copy GTA: San Andreas yang lu punya sendiri (PC atau Android) — app ini gak nyediain file game.</p></div>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <div class="t"><h3>Install client SA-MP</h3><p>Download client SA-MP resmi (PC) atau ikuti panduan komunitas SA-MP Android buat versi mobile.</p></div>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <div class="t"><h3>Connect ke server</h3><p>Masukin IP <strong>217.216.111.75:7034</strong> di server list, atau pakai launcher connect.bat (PC) buat auto-connect.</p></div>
+      </div>
+      <div class="step">
+        <div class="n">4</div>
+        <div class="t"><h3>Baca aturan RP</h3><p>Sebelum mulai roleplay, baca aturan server di Discord biar gak kena tindakan moderasi.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BERITA ============ -->
+  <section class="page" id="page-news">
+    <div class="card">
+      <h2>Berita & Event</h2>
+      <div id="newsList">
+        <div class="news-item">
+          <div class="news-date">Contoh</div>
+          <h3>Judul pengumuman di sini</h3>
+          <p>Isi berita/event bisa diisi manual di src/news.json, atau ditarik dari backend kalau mau dinamis.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DONASI ============ -->
+  <section class="page" id="page-donate">
+    <div class="card">
+      <h2>Dukung Server</h2>
+      <div class="price-card">
+        <div><div class="p-name">VIP Bronze</div><div class="p-desc">Skin & kendaraan dasar</div></div>
+        <div class="p-price">Rp 25rb</div>
+      </div>
+      <div class="price-card featured">
+        <div><div class="p-name">VIP Gold</div><div class="p-desc">Fitur lengkap + prioritas support</div></div>
+        <div class="p-price">Rp 75rb</div>
+      </div>
+      <a class="cta-gold" href="https://ahmadstore.my.id" target="_blank">Top Up di Ahmad Store</a>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabbar">
+  <button class="tab active" data-page="page-status" onclick="showPage('page-status', this)">
+    <span class="ic">●</span>Status
+  </button>
+  <button class="tab" data-page="page-discord" onclick="showPage('page-discord', this)">
+    <span class="ic">◆</span>Komunitas
+  </button>
+  <button class="tab" data-page="page-guide" onclick="showPage('page-guide', this)">
+    <span class="ic">▲</span>Cara Main
+  </button>
+  <button class="tab" data-page="page-news" onclick="showPage('page-news', this)">
+    <span class="ic">■</span>Berita
+  </button>
+  <button class="tab" data-page="page-donate" onclick="showPage('page-donate', this)">
+    <span class="ic">♦</span>Donasi
+  </button>
+</nav>
+
+<script>
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function copyIP() {
+    navigator.clipboard.writeText('217.216.111.75:7034');
+    alert('IP disalin!');
+  }
+
+  // GANTI URL INI dengan endpoint backend query server lu (lihat query-backend/).
+  const QUERY_BACKEND_URL = 'https://ahmadstore.my.id/ecrp-query.php';
+
+  async function refreshStatus() {
+    const dot = document.getElementById('statusDot');
+    const label = document.getElementById('statusLabel');
+    label.textContent = 'Mengecek...';
+    dot.className = 'status-dot';
+
+    try {
+      const res = await fetch(QUERY_BACKEND_URL, { cache: 'no-store' });
+      const data = await res.json();
+      if (data.online) {
+        dot.className = 'status-dot online';
+        label.className = 'status-label online';
+        label.textContent = 'Online';
+        document.getElementById('statPlayers').textContent = data.players + '/' + data.maxplayers;
+        document.getElementById('statPing').textContent = data.ping ?? '–';
+      } else {
+        throw new Error('offline');
+      }
+    } catch (e) {
+      dot.className = 'status-dot offline';
+      label.className = 'status-label offline';
+      label.textContent = 'Offline / gak bisa diakses';
+      document.getElementById('statPlayers').textContent = '–';
+      document.getElementById('statPing').textContent = '–';
+    }
+  }
+
+  refreshStatus();
+  setInterval(refreshStatus, 30000);
+</script>
+
+</body>
+</html>
