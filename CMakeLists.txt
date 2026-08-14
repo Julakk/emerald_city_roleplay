@@ -10,7 +10,7 @@ add_library(ecrp SHARED
     src/hook.cpp
 )
 
-target_include_directories(ecrp PRIVATE include)
+target_include_directories(ecrp PRIVATE include third_party)
 
 # Link library D3D9 buat hook rendering.
 target_link_libraries(ecrp PRIVATE d3d9)
