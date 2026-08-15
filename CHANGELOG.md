@@ -213,6 +213,26 @@ All notable changes, fixes, security updates, and improvements to Emerald City R
 
 ---
 
+## Patch 0.0.9 — 15 AUG 2026
+
+- **TextDraw.inc**
+  - Fixed posisi teks **"OVERDOSIS"** pada RedScreen yang berada di luar layar karena posisi Y bernilai minus.
+  - Teks overdosis sekarang tampil dengan benar pada RedScreen.
+
+- **Inventory.inc**
+  - Fixed `BukaInven` yang tidak di-reset ke `0` saat backpack ditutup.
+  - Mencegah backpack terkunci permanen setelah dibuka sekali.
+  - Fixed inkonsistensi penggunaan Meth pada cabang overdosis berdasarkan health.
+  - Sebelumnya terdapat `return` dini yang menyebabkan item tidak terkonsumsi dan backpack tidak tertutup otomatis.
+  - Sekarang alurnya disamakan dengan cabang overdosis berdasarkan armor.
+
+- **OnClick.inc**
+  - Fixed pengecekan `pGender == 0` yang salah tercampur pada pembatasan lokasi spawn **BANDARA & PELABUHAN**.
+  - Karakter baru yang gender-nya belum diset sekarang tetap dapat memilih kedua lokasi tersebut.
+  - Mencegah proses spawn menjadi macet permanen.
+
+---
+
 ## 📊 Patch Summary
 
 | Patch | Date | Focus |
@@ -225,6 +245,7 @@ All notable changes, fixes, security updates, and improvements to Emerald City R
 | 0.0.6 | 11 AUG 2026 | Vehicle, Family, Permission & Format Security |
 | 0.0.7 | 11 AUG 2026 | Business, Door, Fuel, Helmet, House |
 | 0.0.8 | 11 AUG 2026 | Audio, Ask & Report Systems |
+| 0.0.9 | 15 AUG 2026 | Overdose, Inventory, Spawn & TextDraw Fixes |
 
 ---
 
