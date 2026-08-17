@@ -311,6 +311,39 @@ All notable changes, fixes, security updates, and improvements to Emerald City R
 
 ---
 
+## 🚀 Patch 0.1.3 — 16 AUG 2026
+
+- 🏪 **RobberyMarket.inc**
+  - 🔒 Fixed security issue caused by a missing curly-brace block in `/robbiz`.
+  - The requirement to be in front of the business was previously not actually enforced.
+  - Players could previously rob from anywhere on the map as long as the SAPD/SAMD requirements were met.
+
+- 🏠 **Rental.inc**
+  - Fixed `sscanf` in `/createrent` requesting 2 parameters when only 1 was required.
+  - Fixed reversed rental type validation in `/editrent`.
+  - Valid inputs **1–2** are now accepted correctly, while invalid **0/negative** values are rejected.
+
+---
+
+## 🚀 Patch 0.1.4 — 17 AUG 2026
+
+- 🖥️ **Mode.pwn**
+  - 🔒 Fixed SQL Injection vulnerability in `OnPlayerConnect`.
+  - UCP account search queries are now escaped using `%e`.
+  - Fixed body-part validation in `OnPlayerConnect` that used an early `return`.
+  - All applicable body parts are now processed instead of only the first one.
+  - 🚗 Fixed major vehicle accident injury logic in `OnVehicleDamageStatusUpdate`.
+  - Seatbelt/helmet protection checks previously used `||`, causing almost every player to be treated as unprotected even when wearing a helmet or seatbelt.
+  - Protection checks now correctly use `&&`.
+  - Fixed duplicated random variable usage in `OnPlayerDeath`.
+  - Two body parts now receive independent injury values instead of identical values.
+  - 💰 Fixed 3 purchase transactions that did not validate sufficient balance:
+    - Male clothing skin
+    - Female clothing skin
+    - Toys
+
+---
+
 ## 📊 Patch Summary
 
 | Patch | Date | Focus |
@@ -327,6 +360,8 @@ All notable changes, fixes, security updates, and improvements to Emerald City R
 | 🚀 0.1.0 | 16 AUG 2026 | Private Farm, Pedagang, Kanabis & PayToll |
 | 🚀 0.1.1 | 16 AUG 2026 | Sweeper, ATM, Taxi, Trucker, Trashmaster & Susu |
 | 🚀 0.1.2 | 16 AUG 2026 | DamageLog, BoomBox & BlackMarket |
+| 🚀 0.1.3 | 16 AUG 2026 | RobberyMarket & Rental Security/Fixes |
+| 🚀 0.1.4 | 17 AUG 2026 | Mode, SQL Injection, Injury & Purchase Validation |
 
 ---
 
