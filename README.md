@@ -136,7 +136,7 @@ Update dan patch akan terus dilakukan untuk:
 Bergabung dengan komunitas resmi **Emerald City Roleplay** untuk mendapatkan informasi terbaru, update server, event, dan informasi lainnya.
 
 > 💬 **Official Discord:**  
-> `YOUR_DISCORD_INVITE`
+> `https://discord.gg/hJ96fKdE9z`
 
 ---
 
