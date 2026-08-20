@@ -344,6 +344,46 @@ All notable changes, fixes, security updates, and improvements to Emerald City R
 
 ---
 
+## 🚀 Patch 0.1.5 — 19 AUG 2026
+
+- 🚨 **Sirine.inc**
+  - Fixed `/siren` yang tidak memvalidasi apakah player berada di dalam kendaraan.
+  - Mencegah risiko banyak player menggunakan slot data yang sama ketika command digunakan di luar kendaraan.
+
+- 🔐 **Ucp.inc**
+  - Fixed SQL Injection pada 4 query:
+    - Load karakter UCP
+    - Spawn UCP character
+    - Cek ban
+    - Cek nama karakter baru
+  - Query sekarang menggunakan escape `%e`.
+  - Fixed format string vulnerability pada nama karakter & last login yang dimuat dari database.
+  - Fixed `PlayerIP` yang tidak pernah diisi sebelum digunakan untuk pengecekan ban berbasis IP-range.
+
+- 🎨 **SprayTag.inc**
+  - Fixed SQL Injection pada penyimpanan Font & Text spray tag.
+  - Input teks player sekarang di-escape sebelum masuk ke query.
+  - Fixed format string vulnerability pada teks & font spray tag di 4 titik.
+  - Input player tidak lagi digunakan langsung sebagai format string.
+
+- 🗄️ **vStorage.inc**
+  - Fixed pengecekan kapasitas bagasi yang menggunakan ID kendaraan mentah sebagai index array player sebelum proses resolusi kendaraan selesai.
+  - Mencegah potensi crash akibat akses index array yang tidak valid.
+  - Fixed SQL Injection pada penyimpanan nama item bagasi.
+  - Mengganti `format()` menjadi `mysql_format()` agar proses escaping SQL berjalan dengan benar.
+  - ⚠️ **Catatan:** Field `pBeratBagasi` terindikasi salah tempat karena menggunakan index kendaraan pada array data player.
+  - Berpotensi menyebabkan out-of-bounds apabila slot kendaraan melebihi `MAX_PLAYERS` dan perlu ditinjau lebih lanjut.
+
+- 🛒 **Vending.inc**
+  - Fixed `Vending_Save` yang menggunakan `format()` biasa untuk query SQL.
+  - Sekarang menggunakan `mysql_format()` dengan escaping yang benar.
+  - Fixed format string vulnerability pada nama owner vending di 2 titik.
+  - Fixed validasi slot yang mustahil terpenuhi (`&&` menjadi `||`) pada:
+    - `ReturnRestockVendingID`
+    - `ReturnPlayerVendingID`
+  - Fixed argumen berlebih pada `mysql_format` saat membuat vending baru.
+  - Harga vending sekarang dapat tersimpan dengan benar.
+
 ## 📊 Patch Summary
 
 | Patch | Date | Focus |
@@ -362,6 +402,7 @@ All notable changes, fixes, security updates, and improvements to Emerald City R
 | 🚀 0.1.2 | 16 AUG 2026 | DamageLog, BoomBox & BlackMarket |
 | 🚀 0.1.3 | 16 AUG 2026 | RobberyMarket & Rental Security/Fixes |
 | 🚀 0.1.4 | 17 AUG 2026 | Mode, SQL Injection, Injury & Purchase Validation |
+| 🚀 0.1.5 | 19 AUG 2026 | Siren, UCP Security, SprayTag, vStorage & Vending |
 
 ---
 
