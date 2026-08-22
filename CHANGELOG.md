@@ -384,6 +384,39 @@ All notable changes, fixes, security updates, and improvements to Emerald City R
   - Fixed argumen berlebih pada `mysql_format` saat membuat vending baru.
   - Harga vending sekarang dapat tersimpan dengan benar.
 
+  ---
+
+## 🚀 Patch 0.1.6 — 22 AUG 2026
+
+- 🎨 **Update HUD — TextDraw.inc, Native.inc**
+  - Mengganti seluruh TextDraw HBE lama (16 elemen) dengan **HBE Modern (41 elemen)**.
+  - Array tetap menggunakan `AhmadHbeStore`.
+  - Fixed `HideHunger()` yang sebelumnya salah memanggil `PlayerTextDrawShow` alih-alih `PlayerTextDrawHide`.
+  - HUD sekarang dapat di-hide dengan benar saat fungsi dipanggil.
+
+- 🚽 **Sistem Baru: Kencing — Mode.pwn, Native.inc, Timer.inc**
+  - Menambahkan `pKencing` dan `pKencingTime` ke `pData`.
+  - Nilai Kencing berkurang **1 poin setiap 150 tick**, seperti sistem Hunger/Energy.
+  - Jika Kencing habis (`≤ 0`):
+    - ❤️ HP berkurang 5.
+    - ⚠️ Player mendapatkan notifikasi peringatan.
+  - Data Kencing tersimpan ke database melalui kolom `kencing`.
+  - Nilai Kencing di-reset menjadi **100** saat reset level.
+  - Nilai Kencing diatur menjadi **50** setelah keluar dari hospital.
+
+- 📊 **Tambah Panel Info Player — TextDraw.inc, Native.inc, Mode.pwn, Timer.inc**
+  - Menambahkan panel informasi player dengan total **37 TextDraw**.
+  - Panel menampilkan:
+    - 👥 Player Online
+    - 🕐 Server Time
+    - 💼 Pekerjaan
+    - 👤 Name
+    - 🏦 Bank
+    - 💵 Cash
+  - Informasi pekerjaan otomatis mengambil data dari **Faction** apabila player memiliki faction.
+  - Jika tidak memiliki faction, sistem mengambil data dari **Job**.
+  - Panel diperbarui setiap **1 detik** bersamaan dengan update HBE.
+
 ## 📊 Patch Summary
 
 | Patch | Date | Focus |
@@ -403,6 +436,7 @@ All notable changes, fixes, security updates, and improvements to Emerald City R
 | 🚀 0.1.3 | 16 AUG 2026 | RobberyMarket & Rental Security/Fixes |
 | 🚀 0.1.4 | 17 AUG 2026 | Mode, SQL Injection, Injury & Purchase Validation |
 | 🚀 0.1.5 | 19 AUG 2026 | Siren, UCP Security, SprayTag, vStorage & Vending |
+| 🚀 0.1.6 | 22 AUG 2026 | Modern HBE, Kencing System & Player Info Panel |
 
 ---
 
